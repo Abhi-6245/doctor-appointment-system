@@ -1,17 +1,16 @@
 package com.doctorservice.controller;
 
 import com.doctorservice.dto.DoctorRequestDto;
-import com.doctorservice.dto.SearchResultDto;
 import com.doctorservice.entity.Doctor;
 import com.doctorservice.entity.DoctorAppointmentSchedule;
 import com.doctorservice.entity.TimeSlots;
 import com.doctorservice.reposistory.DoctorRepository;
 import com.doctorservice.reposistory.TimeSlotsReposistory;
 import com.doctorservice.service.DoctorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,10 +35,15 @@ public class DoctorController {
     }
 
     // ================= SAVE DOCTOR =================
-    @PostMapping("/save")
-    public Doctor saveDoctor(@RequestBody DoctorRequestDto dto) {
-        return doctorService.saveDoctor(dto);
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Doctor saveDoctor(
+            @RequestPart("doctor") DoctorRequestDto dto,
+            @RequestPart("image") MultipartFile image) {
+
+        return doctorService.saveDoctor(dto, image);
     }
+
+
 
     // ================= SEARCH DOCTOR =================
     // http://localhost:8080/api/v1/doctor/search?specialization=cardiologist&areaName=btm

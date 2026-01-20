@@ -11,6 +11,7 @@ import com.doctorservice.reposistory.CityRepository;
 import com.doctorservice.reposistory.DoctorRepository;
 import com.doctorservice.reposistory.StateReposistory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,29 +23,36 @@ public class DoctorService {
     private final StateReposistory stateRepository;
     private final CityRepository cityRepository;
     private final AreaReposistory areaRepository;
+    private final S3Service s3Service;
 
     public DoctorService(
             DoctorRepository doctorRepository,
             StateReposistory stateRepository,
             CityRepository cityRepository,
-            AreaReposistory areaRepository) {
+            AreaReposistory areaRepository,
+            S3Service s3Service, S3Service s3Service1) {
 
         this.doctorRepository = doctorRepository;
         this.stateRepository = stateRepository;
         this.cityRepository = cityRepository;
         this.areaRepository = areaRepository;
+        this.s3Service = s3Service1;
     }
 
-    public Doctor saveDoctor(DoctorRequestDto dto) {
+    public Doctor saveDoctor(DoctorRequestDto dto, MultipartFile image) {
 
-        Doctor doctor = new Doctor();
+        ;  Doctor doctor = new Doctor();
         doctor.setName(dto.getName());
         doctor.setSpecialization(dto.getSpecialization());
         doctor.setQualification(dto.getQualification());
         doctor.setContact(dto.getContact());
         doctor.setExperience(dto.getExperience());
-        doctor.setUrl(dto.getUrl());
         doctor.setAddress(dto.getAddress());
+
+        // 🔥 Upload image to S3
+        String imageUrl = s3Service.uploadImage(image);
+        doctor.setUrl(imageUrl);
+
 // -------- STATE --------
         State state = stateRepository
                 .findFirstByNameIgnoreCase(dto.getState().getName())

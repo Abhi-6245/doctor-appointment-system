@@ -8,7 +8,6 @@ public class DoctorRequestDto {
     private String qualification;
     private String contact;
     private String experience;
-    private String url;
     private String address;
 
     private NameDto state;
@@ -65,13 +64,6 @@ public class DoctorRequestDto {
         this.experience = experience;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
 
     public String getAddress() {
         return address;
