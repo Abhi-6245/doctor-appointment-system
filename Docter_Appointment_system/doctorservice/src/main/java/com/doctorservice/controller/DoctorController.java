@@ -8,10 +8,12 @@ import com.doctorservice.reposistory.DoctorRepository;
 import com.doctorservice.reposistory.TimeSlotsReposistory;
 import com.doctorservice.service.DoctorService;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -37,8 +39,12 @@ public class DoctorController {
     // ================= SAVE DOCTOR =================
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Doctor saveDoctor(
-            @RequestPart("doctor") DoctorRequestDto dto,
-            @RequestPart("image") MultipartFile image) {
+            @RequestPart("doctor") String doctorJson,
+            @RequestPart("image") MultipartFile image) throws IOException {
+
+        // convert JSON string to DoctorRequestDto
+        ObjectMapper mapper = new ObjectMapper();
+        DoctorRequestDto dto = mapper.readValue(doctorJson, DoctorRequestDto.class);
 
         return doctorService.saveDoctor(dto, image);
     }
