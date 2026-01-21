@@ -1,43 +1,31 @@
 package com.doctorservice.configg;
 
 
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
-import java.util.UUID;
+@Configuration
+public class AwsConfig {
 
-@Service
-public class S3Service {
+    @Bean
+    public S3Client s3Client() {
 
-    private final S3Client s3Client;
-    private final String bucketName = "your-bucket-name";
+        AwsBasicCredentials credentials =
+                AwsBasicCredentials.create(
+                        "AKIAV56G5Rxxxxxx",
+                        "B55ivi/+GxFxxxxxxxx"
+                );
 
-    public S3Service(S3Client s3Client) {
-        this.s3Client = s3Client;
-    }
-
-    public String uploadImage(MultipartFile file) {
-
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-
-        try {
-            PutObjectRequest request = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .contentType(file.getContentType())
-                    .build();
-
-            s3Client.putObject(request,
-                    software.amazon.awssdk.core.sync.RequestBody
-                            .fromBytes(file.getBytes()));
-
-        } catch (IOException e) {
-            throw new RuntimeException("Error uploading file to S3");
-        }
-
-        return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+        return S3Client.builder()
+                .region(Region.AP_SOUTH_1)
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(credentials)
+                )
+                .build();
     }
 }
+
